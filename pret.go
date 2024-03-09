@@ -120,7 +120,14 @@ func process_result_PJL(result []byte, info_command string) string {
 	footer_Hex := "0d0a0c40504a4c204543484f2044454c494d49544552" // 0d0a0c + hex("@PJL ECHO DELIMITER")
 	result_Hex := hex.EncodeToString(result)
 	if strings.Contains(result_Hex, info_command_Hex) {
-		result_Processed := strings.Split(strings.Split(result_Hex, info_command_Hex)[1], footer_Hex)[0]
+		var result string
+		result_ := strings.Split(result_Hex, info_command_Hex)
+		if len(result_) > 1 {
+			result = result_[1]
+		} else {
+			result = result_[0]
+		}
+		result_Processed := strings.Split(result, footer_Hex)[0]
 		bytes, _ := hex.DecodeString(result_Processed)
 		return string(bytes)
 	} else {
@@ -145,8 +152,14 @@ func process_result_PS(result []byte, token string) string {
 	if strings.Contains(result_Hex, "78310d0a78320a") {
 		token_hex := hex.EncodeToString([]byte(token)) + "0a"
 		if strings.Contains(result_Hex, token_hex) {
+			var result string
 			result_Hex_ := strings.Split(result_Hex, token_hex)
-			result_Processed, _ := hex.DecodeString(strings.ReplaceAll(result_Hex_[1], "0d0a", ""))
+			if len(result_Hex_) > 1 {
+				result = result_Hex_[1]
+			} else {
+				result = result_Hex_[0]
+			}
+			result_Processed, _ := hex.DecodeString(strings.ReplaceAll(result, "0d0a", ""))
 			return string(result_Processed)
 		} else {
 			return "Failed"
@@ -154,8 +167,14 @@ func process_result_PS(result []byte, token string) string {
 	} else {
 		token_hex := hex.EncodeToString([]byte(token))
 		if strings.Contains(result_Hex, token_hex) {
+			var result string
 			result_Hex_ := strings.Split(result_Hex, token_hex+"0a")
-			result_Processed, _ := hex.DecodeString(strings.ReplaceAll(result_Hex_[1], token_hex+"0d0a", ""))
+			if len(result_Hex_) > 1 {
+				result = result_Hex_[1]
+			} else {
+				result = result_Hex_[0]
+			}
+			result_Processed, _ := hex.DecodeString(strings.ReplaceAll(result, token_hex+"0d0a", ""))
 			return string(result_Processed)
 		} else {
 			return "Failed"
